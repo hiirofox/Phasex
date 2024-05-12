@@ -1,0 +1,45 @@
+#pragma once
+
+#include <JuceHeader.h>
+
+class LMKnob :public juce::Component
+{
+public:
+	LMKnob() :slider(), label()
+	{
+		slider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+		slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+		label.setJustificationType(juce::Justification::centredTop);
+		label.setFont(juce::Font("Fixedsys", 15.0, 0));
+		label.setColour(juce::Label::textColourId, juce::Colour(0x77,0xff,0x77));
+
+
+		addAndMakeVisible(slider);
+		addAndMakeVisible(label);
+	}
+	~LMKnob()
+	{
+		ParamLinker = nullptr;
+	}
+	juce::Slider& getSlider()
+	{
+		return slider;
+	}
+	void ParamLink(juce::AudioProcessorValueTreeState& stateToUse, const juce::String& parameterID)
+	{
+		ParamLinker = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(stateToUse, parameterID, slider);
+	}
+	void setText(const juce::String& text)
+	{
+		label.setText(text, juce::dontSendNotification);
+	}
+	void resized() override {
+		slider.setBounds((64 - 56) / 2, 0, 56, 56);
+		label.setBounds(0, 48, 64, 16);
+	}
+private:
+
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> ParamLinker;
+	juce::Slider slider;
+	juce::Label label;
+};
